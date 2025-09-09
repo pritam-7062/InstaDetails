@@ -1,5 +1,10 @@
 #!/bin/env python3
+import sys, os
 from flask import Flask, jsonify
+
+# Add .lib to sys.path so Python can find api.py
+sys.path.append(os.path.join(os.getcwd(), ".lib"))
+
 from api import user_info, post_info
 
 app = Flask(__name__)

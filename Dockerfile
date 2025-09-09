@@ -1,9 +1,24 @@
-FROM python:3
+FROM python:3.11-slim
 
-COPY main.py /
-COPY .lib /
-COPY requirements.txt /
+# Install system dependencies (curl useful for debugging, torsocks if you want proxying)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install -r requirements.txt
+# Set working dir
+WORKDIR /app
 
-ENTRYPOINT ["python3", "main.py"]
+# Copy requirements first (for caching)
+COPY requirements.txt .
+
+# Install Python deps
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy all project files
+COPY . .
+
+# Expose Flask port
+EXPOSE 5000
+
+# Run the Flask API
+ENTRYPOINT ["python", "web.py"]
